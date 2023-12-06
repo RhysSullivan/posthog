@@ -20,7 +20,7 @@ export function AppCode({ pluginId }: { pluginId: number }): JSX.Element {
                 key: filename,
                 content: (
                     <CodeEditor
-                        path={currentFile}
+                        path={pluginId + currentFile}
                         language={currentFile.endsWith('.json') ? 'json' : 'typescript'}
                         value={pluginSource[filename] ?? ''}
                         onChange={(value) => updateCode(filename, value ?? '')}
