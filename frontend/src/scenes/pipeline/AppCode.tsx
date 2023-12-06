@@ -1,6 +1,7 @@
 import { LemonTabs } from '@posthog/lemon-ui'
 import { useActions, useValues } from 'kea'
 import { CodeEditor } from 'lib/components/CodeEditors'
+import { CodeSnippet, Language } from 'lib/components/CodeSnippet'
 
 import { appsCodeLogic } from './appCodeLogic'
 
@@ -18,9 +19,21 @@ export function AppCode({ pluginId }: { pluginId: number }): JSX.Element {
             tabs={Object.values(fileNames).map((filename) => ({
                 label: filename,
                 key: filename,
+                // Alternative if editing isn't necessary:
+                // content: (
+                //     <CodeSnippet
+                //         language={currentFile.endsWith('.json') ? Language.JSON : Language.JavaScript}
+                //         thing={filename}
+                //         maxLinesWithoutExpansion={5}
+                //         style={{ fontSize: 12 }}
+                //         wrap
+                //     >
+                //         {pluginSource[filename] ?? ''}
+                //     </CodeSnippet>
+                // ),
                 content: (
                     <CodeEditor
-                        path={pluginId + currentFile}
+                        path={`${pluginId}/${currentFile}`}
                         language={currentFile.endsWith('.json') ? 'json' : 'typescript'}
                         value={pluginSource[filename] ?? ''}
                         onChange={(value) => updateCode(filename, value ?? '')}
