@@ -19,7 +19,7 @@ export function AppCode({ pluginId }: { pluginId: number }): JSX.Element {
                 label: filename,
                 key: filename,
                 content: (
-                    <CodeEditor // TODO: how to distinguish source apps that can be edited vs those that can't
+                    <CodeEditor
                         path={currentFile}
                         language={currentFile.endsWith('.json') ? 'json' : 'typescript'}
                         value={pluginSource[filename] ?? ''}
@@ -27,6 +27,7 @@ export function AppCode({ pluginId }: { pluginId: number }): JSX.Element {
                         height={700}
                         options={{
                             minimap: { enabled: false },
+                            readOnly: true, // TODO: how to distinguish source apps that can be edited vs those that can't
                         }}
                     />
                 ),
