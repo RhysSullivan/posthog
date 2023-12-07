@@ -195,7 +195,7 @@ function AppsTable({ plugins }: RenderAppsTable): JSX.Element {
                 expandable={{
                     // TODO: how to handle expanding multiple rows?
                     expandedRowRender: function Render(plugin: PluginType) {
-                        return <AppCode pluginId={plugin.id} />
+                        return <AppCode pluginId={plugin.id} pluginType={plugin.plugin_type} />
                     },
                 }}
             />
