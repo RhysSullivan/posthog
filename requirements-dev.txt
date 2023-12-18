@@ -183,11 +183,11 @@ pycparser==2.20
     # via
     #   -c requirements.txt
     #   cffi
-pydantic[email]==2.3.0
+pydantic[email]==2.5.2
     # via
     #   -c requirements.txt
     #   datamodel-code-generator
-pydantic-core==2.6.3
+pydantic-core==2.14.5
     # via
     #   -c requirements.txt
     #   pydantic

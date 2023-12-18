@@ -2409,6 +2409,24 @@
             ],
             "type": "string"
         },
+        "QueryRequest": {
+            "additionalProperties": false,
+            "properties": {
+                "async": {
+                    "type": "boolean"
+                },
+                "client_query_id": {
+                    "type": "string"
+                },
+                "query": {
+                    "$ref": "#/definitions/QuerySchema"
+                },
+                "refresh": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
         "QueryResponse": {
             "additionalProperties": false,
             "properties": {

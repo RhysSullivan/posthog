@@ -1,11 +1,12 @@
 import json
 import re
 import uuid
-from typing import Dict
+from typing import Dict, Tuple, Type, Union
 
 from django.http import JsonResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse
+from pydantic import BaseModel, create_model, Field
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError, ValidationError, NotAuthenticated
@@ -17,8 +18,8 @@ from sentry_sdk import capture_exception
 
 from posthog import schema
 from posthog.api.documentation import extend_schema
-from posthog.api.services.query import process_query
 from posthog.api.routing import StructuredViewSetMixin
+from posthog.api.services.query import process_query
 from posthog.clickhouse.client.execute_async import (
     cancel_query,
     enqueue_process_query_task,
@@ -28,7 +29,6 @@ from posthog.clickhouse.query_tagging import tag_queries
 from posthog.errors import ExposedCHQueryError
 from posthog.hogql.ai import PromptUnclear, write_sql_from_prompt
 from posthog.hogql.errors import HogQLException
-
 from posthog.models.user import User
 from posthog.permissions import (
     ProjectMembershipNecessaryPermissions,
@@ -39,6 +39,7 @@ from posthog.rate_limit import (
     AISustainedRateThrottle,
     TeamRateThrottle,
 )
+from posthog.schema import PersonsQueryResponse, RetentionQuery, HogQLQuery, QuerySchema
 from posthog.utils import refresh_requested_by_client
 
 
@@ -69,6 +70,17 @@ class QuerySchemaParser(JSONParser):
         return data
 
 
+class TestPydanticSchema(BaseModel):
+    union_of: HogQLQuery | RetentionQuery
+
+
+def union_factory(name: str, models: Union[Tuple[Type[BaseModel]]]) -> Type[BaseModel]:
+    return create_model(
+        name,
+        union_of=(models, Field(title=f"Union of {name} models")),
+    )
+
+
 class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
     permission_classes = [
         IsAuthenticated,
@@ -85,6 +97,7 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
             return [QueryThrottle()]
 
     @extend_schema(
+        request=QuerySchema,  # union_factory("Query", RunnableQueryNode),
         parameters=[
             OpenApiParameter(
                 "query",
@@ -113,16 +126,19 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
             ),
         ],
         responses={
-            200: OpenApiResponse(description="Query results"),
+            200: OpenApiResponse(response=PersonsQueryResponse),
         },
     )
-    def create(self, request, *args, **kwargs) -> JsonResponse:
+    def create(self, request, *args, **kwargs) -> Response:
         request_json = request.data
         query_json = request_json.get("query")
         query_async = request_json.get("async", False)
         refresh_requested = refresh_requested_by_client(request)
-
         client_query_id = request_json.get("client_query_id") or uuid.uuid4().hex
+
+        if query_json is None:
+            raise ValidationError("Please provide a query in the request body.")
+
         self._tag_client_query_id(client_query_id)
 
         if query_async:
@@ -132,11 +148,11 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
                 query_id=client_query_id,
                 refresh_requested=refresh_requested,
             )
-            return JsonResponse(query_status.model_dump(), safe=False)
+            return Response(query_status.model_dump())
 
         try:
             result = process_query(self.team, query_json, refresh_requested=refresh_requested)
-            return JsonResponse(result, safe=False)
+            return Response(result)
         except (HogQLException, ExposedCHQueryError) as e:
             raise ValidationError(str(e), getattr(e, "code_name", None))
         except Exception as e:

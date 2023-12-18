@@ -216,7 +216,7 @@ drf-exceptions-hog==0.4.0
     # via -r requirements.in
 drf-extensions==0.7.0
     # via -r requirements.in
-drf-spectacular==0.24.2
+drf-spectacular==0.27.0
     # via -r requirements.in
 filelock==3.12.0
     # via snowflake-connector-python
@@ -416,9 +416,9 @@ pycparser==2.20
     # via cffi
 pycryptodomex==3.18.0
     # via snowflake-connector-python
-pydantic==2.3.0
+pydantic==2.5.2
     # via -r requirements.in
-pydantic-core==2.6.3
+pydantic-core==2.14.5
     # via pydantic
 pyjwt==2.4.0
     # via
