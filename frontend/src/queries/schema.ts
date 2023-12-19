@@ -578,13 +578,6 @@ export type LifecycleFilter = Omit<LifecycleFilterType, keyof FilterType | 'show
     toggledLifecycles?: LifecycleToggle[]
 } // using everything except what it inherits from FilterType
 
-export interface QueryRequest {
-    client_query_id?: string
-    refresh?: boolean
-    async?: boolean
-    query?: QuerySchema
-}
-
 export interface QueryResponse {
     results: unknown[]
     timings?: QueryTiming[]

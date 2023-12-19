@@ -3,15 +3,14 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, RootModel
 from typing_extensions import Literal
 
 
-class SchemaRoot(RootModel):
+class SchemaRoot(RootModel[Any]):
     root: Any
 
 
@@ -461,14 +460,14 @@ class QueryStatus(BaseModel):
         extra="forbid",
     )
     complete: Optional[bool] = False
-    end_time: Optional[datetime] = None
+    end_time: Optional[AwareDatetime] = None
     error: Optional[bool] = False
     error_message: Optional[str] = ""
-    expiration_time: Optional[datetime] = None
+    expiration_time: Optional[AwareDatetime] = None
     id: str
     query_async: Optional[bool] = True
     results: Optional[Any] = None
-    start_time: Optional[datetime] = None
+    start_time: Optional[AwareDatetime] = None
     task_id: Optional[str] = None
     team_id: int
 
@@ -733,7 +732,7 @@ class WebTopClicksQueryResponse(BaseModel):
     types: Optional[List] = None
 
 
-class AnyResponseTypeItem(BaseModel):
+class AnyResponseType1(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -981,7 +980,7 @@ class RetentionResult(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    date: datetime
+    date: AwareDatetime
     label: str
     values: List[RetentionValue]
 
@@ -1056,7 +1055,7 @@ class TimeToSeeDataJSONNode(BaseModel):
     source: TimeToSeeDataQuery
 
 
-class TimeToSeeDataNode(RootModel):
+class TimeToSeeDataNode(RootModel[Union[TimeToSeeDataJSONNode, TimeToSeeDataWaterfallNode]]):
     root: Union[TimeToSeeDataJSONNode, TimeToSeeDataWaterfallNode]
 
 
@@ -1109,9 +1108,15 @@ class WebTopClicksQuery(BaseModel):
     response: Optional[WebTopClicksQueryResponse] = None
 
 
-class AnyResponseType(RootModel):
+class AnyResponseType(
+    RootModel[
+        Union[
+            Dict[str, Any], HogQLQueryResponse, HogQLMetadataResponse, Union[AnyResponseType1, Any], EventsQueryResponse
+        ]
+    ]
+):
     root: Union[
-        Dict[str, Any], HogQLQueryResponse, HogQLMetadataResponse, Union[AnyResponseTypeItem, Any], EventsQueryResponse
+        Dict[str, Any], HogQLQueryResponse, HogQLMetadataResponse, Union[AnyResponseType1, Any], EventsQueryResponse
     ]
 
 
@@ -1361,7 +1366,9 @@ class HogQLQuery(BaseModel):
     )
 
 
-class InsightFilter(RootModel):
+class InsightFilter(
+    RootModel[Union[TrendsFilter, FunnelsFilter, RetentionFilter, PathsFilter, StickinessFilter, LifecycleFilter]]
+):
     root: Union[TrendsFilter, FunnelsFilter, RetentionFilter, PathsFilter, StickinessFilter, LifecycleFilter]
 
 
@@ -1526,7 +1533,7 @@ class DataVisualizationNode(BaseModel):
     source: HogQLQuery
 
 
-class HasPropertiesNode(RootModel):
+class HasPropertiesNode(RootModel[Union[EventsNode, EventsQuery, PersonsNode]]):
     root: Union[EventsNode, EventsQuery, PersonsNode]
 
 
@@ -1984,36 +1991,54 @@ class DataTableNode(BaseModel):
     ] = Field(..., description="Source of the events")
 
 
-class QuerySchema(RootModel):
-    root: Union[
-        DataVisualizationNode,
-        DataTableNode,
-        SavedInsightNode,
-        InsightVizNode,
-        TrendsQuery,
-        FunnelsQuery,
-        RetentionQuery,
-        PathsQuery,
-        StickinessQuery,
-        LifecycleQuery,
-        TimeToSeeDataSessionsQuery,
-        DatabaseSchemaQuery,
+class QueryRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    async_: Optional[bool] = Field(
+        default=None,
+        alias="async",
+        description="(Experimental) Whether to run the query asynchronously. Defaults to False. If True, the `id` of the query can be used to check the status and to cancel it.",
+        examples=[True],
+    )
+    client_query_id: Optional[str] = Field(
+        default=None, description="Client provided query ID. Can be used to retrieve the status or cancel the query."
+    )
+    query: Optional[
         Union[
-            EventsNode,
-            ActionsNode,
-            PersonsNode,
+            DataVisualizationNode,
+            DataTableNode,
+            SavedInsightNode,
+            InsightVizNode,
+            TrendsQuery,
+            FunnelsQuery,
+            RetentionQuery,
+            PathsQuery,
+            StickinessQuery,
+            LifecycleQuery,
             TimeToSeeDataSessionsQuery,
-            EventsQuery,
-            PersonsQuery,
-            InsightPersonsQuery,
-            SessionsTimelineQuery,
-            HogQLQuery,
-            HogQLMetadata,
-            WebOverviewQuery,
-            WebStatsTableQuery,
-            WebTopClicksQuery,
-        ],
-    ]
+            DatabaseSchemaQuery,
+            Union[
+                EventsNode,
+                ActionsNode,
+                PersonsNode,
+                TimeToSeeDataSessionsQuery,
+                EventsQuery,
+                PersonsQuery,
+                InsightPersonsQuery,
+                SessionsTimelineQuery,
+                HogQLQuery,
+                HogQLMetadata,
+                WebOverviewQuery,
+                WebStatsTableQuery,
+                WebTopClicksQuery,
+            ],
+        ]
+    ] = Field(
+        default=None,
+        description='Submit a JSON string representing a query for PostHog data analysis, for example a HogQL query.\n\nExample payload:\n\n```\n\n{"query": {"kind": "HogQLQuery", "query": "select * from events limit 100"}}\n\n```\n\nFor more details on HogQL queries, see the [PostHog HogQL documentation](/docs/hogql#api-access).',
+    )
+    refresh: Optional[bool] = None
 
 
 PropertyGroupFilterValue.model_rebuild()

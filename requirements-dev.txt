@@ -21,8 +21,6 @@ async-timeout==4.0.2
 attrs==21.4.0
     # via
     #   -c requirements.txt
-    #   jsonschema
-    #   openapi-schema-validator
     #   syrupy
 black==22.8.0
     # via
@@ -67,7 +65,7 @@ cryptography==37.0.2
     #   -c requirements.txt
     #   pyopenssl
     #   urllib3
-datamodel-code-generator==0.21.5
+datamodel-code-generator==0.25.1
     # via -r requirements-dev.in
 django==3.2.19
     # via
@@ -110,8 +108,6 @@ idna==2.8
     #   email-validator
     #   requests
     #   urllib3
-importlib-resources==5.10.2
-    # via openapi-spec-validator
 inflect==5.6.2
     # via datamodel-code-generator
 iniconfig==1.1.1
@@ -124,16 +120,6 @@ jinja2==2.11.3
     # via
     #   coreschema
     #   datamodel-code-generator
-jsonschema==4.4.0
-    # via
-    #   -c requirements.txt
-    #   jsonschema-spec
-    #   openapi-schema-validator
-    #   openapi-spec-validator
-jsonschema-spec==0.1.2
-    # via openapi-spec-validator
-lazy-object-proxy==1.9.0
-    # via openapi-spec-validator
 lupa==1.14.1
     # via fakeredis
 markupsafe==1.1.1
@@ -148,10 +134,6 @@ mypy-extensions==0.4.3
     #   -r requirements-dev.in
     #   black
     #   mypy
-openapi-schema-validator==0.3.4
-    # via openapi-spec-validator
-openapi-spec-validator==0.5.1
-    # via datamodel-code-generator
 packaging==23.1
     # via
     #   -c requirements.txt
@@ -162,8 +144,6 @@ packaging==23.1
     #   pytest
 parameterized==0.9.0
     # via -r requirements-dev.in
-pathable==0.4.3
-    # via jsonschema-spec
 pathspec==0.9.0
     # via black
 pip-tools==6.13.0
@@ -178,7 +158,6 @@ prance==0.22.2.22.0
     # via
     #   -c requirements.txt
     #   -r requirements-dev.in
-    #   datamodel-code-generator
 pycparser==2.20
     # via
     #   -c requirements.txt
@@ -197,12 +176,6 @@ pyopenssl==22.0.0
     #   urllib3
 pyproject-hooks==1.0.0
     # via build
-pyrsistent==0.18.1
-    # via
-    #   -c requirements.txt
-    #   jsonschema
-pysnooper==1.1.1
-    # via datamodel-code-generator
 pysocks==1.7.1
     # via
     #   -c requirements.txt
@@ -245,11 +218,10 @@ pytz==2023.3
     # via
     #   -c requirements.txt
     #   django
-pyyaml==6.0
+pyyaml==6.0.1
     # via
     #   -c requirements.txt
-    #   jsonschema-spec
-    #   openapi-spec-validator
+    #   datamodel-code-generator
     #   responses
 redis==4.5.4
     # via
@@ -324,7 +296,6 @@ typing-extensions==4.7.1
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework-stubs
-    #   jsonschema-spec
     #   mypy
     #   pydantic
     #   pydantic-core

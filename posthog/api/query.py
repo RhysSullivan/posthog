@@ -1,12 +1,10 @@
 import json
 import re
 import uuid
-from typing import Dict, Tuple, Type, Union
+from typing import Dict
 
 from django.http import JsonResponse
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse
-from pydantic import BaseModel, create_model, Field
+from drf_spectacular.utils import OpenApiResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError, ValidationError, NotAuthenticated
@@ -16,7 +14,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from sentry_sdk import capture_exception
 
-from posthog import schema
 from posthog.api.documentation import extend_schema
 from posthog.api.routing import StructuredViewSetMixin
 from posthog.api.services.query import process_query
@@ -39,7 +36,7 @@ from posthog.rate_limit import (
     AISustainedRateThrottle,
     TeamRateThrottle,
 )
-from posthog.schema import PersonsQueryResponse, RetentionQuery, HogQLQuery, QuerySchema
+from posthog.schema import QueryRequest
 from posthog.utils import refresh_requested_by_client
 
 
@@ -56,7 +53,7 @@ class QuerySchemaParser(JSONParser):
     @staticmethod
     def validate_query(data) -> Dict:
         try:
-            schema.QuerySchema.model_validate(data)
+            QuerySchema.model_validate(data)
             # currently we have to return data not the parsed Model
             # because pydantic doesn't know to discriminate on 'kind'
             # if we can get this correctly typed we can return the parsed model
@@ -68,17 +65,6 @@ class QuerySchemaParser(JSONParser):
         data = super(QuerySchemaParser, self).parse(stream, media_type, parser_context)
         QuerySchemaParser.validate_query(data.get("query"))
         return data
-
-
-class TestPydanticSchema(BaseModel):
-    union_of: HogQLQuery | RetentionQuery
-
-
-def union_factory(name: str, models: Union[Tuple[Type[BaseModel]]]) -> Type[BaseModel]:
-    return create_model(
-        name,
-        union_of=(models, Field(title=f"Union of {name} models")),
-    )
 
 
 class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
@@ -97,36 +83,9 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
             return [QueryThrottle()]
 
     @extend_schema(
-        request=QuerySchema,  # union_factory("Query", RunnableQueryNode),
-        parameters=[
-            OpenApiParameter(
-                "query",
-                OpenApiTypes.STR,
-                description=(
-                    "Submit a JSON string representing a query for PostHog data analysis,"
-                    " for example a HogQL query.\n\nExample payload:\n"
-                    '```\n{"query": {"kind": "HogQLQuery", "query": "select * from events limit 100"}}\n```'
-                    "\n\nFor more details on HogQL queries"
-                    ", see the [PostHog HogQL documentation](/docs/hogql#api-access). "
-                ),
-            ),
-            OpenApiParameter(
-                "client_query_id",
-                OpenApiTypes.STR,
-                description="Client provided query ID. Can be used to retrieve the status or cancel the query.",
-            ),
-            OpenApiParameter(
-                "async",
-                OpenApiTypes.BOOL,
-                description=(
-                    "(Experimental) "
-                    "Whether to run the query asynchronously. Defaults to False."
-                    " If True, the `id` of the query can be used to check the status and to cancel it."
-                ),
-            ),
-        ],
+        request=QueryRequest,
         responses={
-            200: OpenApiResponse(response=PersonsQueryResponse),
+            200: OpenApiResponse(description="Query results"),
         },
     )
     def create(self, request, *args, **kwargs) -> Response:
