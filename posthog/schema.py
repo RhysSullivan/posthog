@@ -1686,7 +1686,13 @@ class PathsQuery(BaseModel):
 class InsightQueryNode(
     RootModel[Union[TrendsQuery, FunnelsQuery, RetentionQuery, PathsQuery, StickinessQuery, LifecycleQuery]]
 ):
-    root: Union[TrendsQuery, FunnelsQuery, RetentionQuery, PathsQuery, StickinessQuery, LifecycleQuery]
+    root: Union[TrendsQuery, FunnelsQuery, RetentionQuery, PathsQuery, StickinessQuery, LifecycleQuery] = Field(
+        ..., discriminator="kind"
+    )
+
+
+class InsightQuerySource(RootModel[InsightQueryNode]):
+    root: InsightQueryNode
 
 
 class InsightVizNode(BaseModel):
@@ -1718,7 +1724,7 @@ class InsightPersonsQuery(BaseModel):
     day: Optional[str] = None
     kind: Literal["InsightPersonsQuery"] = "InsightPersonsQuery"
     response: Optional[PersonsQueryResponse] = None
-    source: InsightQueryNode
+    source: InsightQuerySource
     status: Optional[str] = None
 
 
@@ -1833,7 +1839,19 @@ class DataTableNode(BaseModel):
 class QuerySchema(
     RootModel[
         Union[
-            AnyDataNode,
+            EventsNode,
+            ActionsNode,
+            PersonsNode,
+            TimeToSeeDataSessionsQuery,
+            EventsQuery,
+            PersonsQuery,
+            InsightPersonsQuery,
+            SessionsTimelineQuery,
+            HogQLQuery,
+            HogQLMetadata,
+            WebOverviewQuery,
+            WebStatsTableQuery,
+            WebTopClicksQuery,
             DataVisualizationNode,
             DataTableNode,
             SavedInsightNode,
@@ -1844,13 +1862,24 @@ class QuerySchema(
             PathsQuery,
             StickinessQuery,
             LifecycleQuery,
-            TimeToSeeDataSessionsQuery,
             DatabaseSchemaQuery,
         ]
     ]
 ):
     root: Union[
-        AnyDataNode,
+        EventsNode,
+        ActionsNode,
+        PersonsNode,
+        TimeToSeeDataSessionsQuery,
+        EventsQuery,
+        PersonsQuery,
+        InsightPersonsQuery,
+        SessionsTimelineQuery,
+        HogQLQuery,
+        HogQLMetadata,
+        WebOverviewQuery,
+        WebStatsTableQuery,
+        WebTopClicksQuery,
         DataVisualizationNode,
         DataTableNode,
         SavedInsightNode,
@@ -1861,9 +1890,8 @@ class QuerySchema(
         PathsQuery,
         StickinessQuery,
         LifecycleQuery,
-        TimeToSeeDataSessionsQuery,
         DatabaseSchemaQuery,
-    ]
+    ] = Field(..., discriminator="kind")
 
 
 class QueryRequest(BaseModel):

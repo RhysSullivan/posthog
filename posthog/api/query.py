@@ -55,8 +55,8 @@ class QuerySchemaParser(JSONParser):
         try:
             QuerySchema.model_validate(data)
             # currently we have to return data not the parsed Model
-            # because pydantic doesn't know to discriminate on 'kind'
-            # if we can get this correctly typed we can return the parsed model
+            # because while pydantic knows to discriminate on 'kind',
+            # we cannot get mypy to understand that
             return data
         except Exception as error:
             raise ParseError(detail=str(error))

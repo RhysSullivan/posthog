@@ -94,9 +94,24 @@ export type AnyDataNode =
     | WebStatsTableQuery
     | WebTopClicksQuery
 
+/**
+ * @discriminator kind
+ */
 export type QuerySchema =
     // Data nodes (see utils.ts)
-    | AnyDataNode
+    | EventsNode // never queried directly
+    | ActionsNode // old actions API endpoint
+    | PersonsNode // old persons API endpoint
+    | TimeToSeeDataSessionsQuery // old API
+    | EventsQuery
+    | PersonsQuery
+    | InsightPersonsQuery
+    | SessionsTimelineQuery
+    | HogQLQuery
+    | HogQLMetadata
+    | WebOverviewQuery
+    | WebStatsTableQuery
+    | WebTopClicksQuery
 
     // Interface nodes
     | DataVisualizationNode
@@ -113,7 +128,6 @@ export type QuerySchema =
     | LifecycleQuery
 
     // Misc
-    | TimeToSeeDataSessionsQuery
     | DatabaseSchemaQuery
 
 /** Node base class, everything else inherits from here */
@@ -773,6 +787,11 @@ export type InsightQueryNode =
     | PathsQuery
     | StickinessQuery
     | LifecycleQuery
+
+/**
+ * @discriminator kind
+ */
+export type InsightQuerySource = InsightQueryNode
 export type InsightNodeKind = InsightQueryNode['kind']
 export type InsightFilterProperty =
     | 'trendsFilter'
@@ -791,7 +810,7 @@ export type InsightFilter =
 
 export interface InsightPersonsQuery {
     kind: NodeKind.InsightPersonsQuery
-    source: InsightQueryNode
+    source: InsightQuerySource
     day?: string
     status?: string
     // TODO: add breakdowns

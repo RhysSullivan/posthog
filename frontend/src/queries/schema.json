@@ -1724,7 +1724,7 @@
                     "$ref": "#/definitions/PersonsQueryResponse"
                 },
                 "source": {
-                    "$ref": "#/definitions/InsightQueryNode"
+                    "$ref": "#/definitions/InsightQuerySource"
                 },
                 "status": {
                     "type": "string"
@@ -1734,7 +1734,10 @@
             "type": "object"
         },
         "InsightQueryNode": {
-            "anyOf": [
+            "discriminator": {
+                "propertyName": "kind"
+            },
+            "oneOf": [
                 {
                     "$ref": "#/definitions/TrendsQuery"
                 },
@@ -1753,7 +1756,12 @@
                 {
                     "$ref": "#/definitions/LifecycleQuery"
                 }
-            ]
+            ],
+            "required": ["kind"],
+            "type": "object"
+        },
+        "InsightQuerySource": {
+            "$ref": "#/definitions/InsightQueryNode"
         },
         "InsightShortId": {
             "type": "string"
@@ -2467,9 +2475,48 @@
             "type": "object"
         },
         "QuerySchema": {
-            "anyOf": [
+            "discriminator": {
+                "propertyName": "kind"
+            },
+            "oneOf": [
                 {
-                    "$ref": "#/definitions/AnyDataNode"
+                    "$ref": "#/definitions/EventsNode"
+                },
+                {
+                    "$ref": "#/definitions/ActionsNode"
+                },
+                {
+                    "$ref": "#/definitions/PersonsNode"
+                },
+                {
+                    "$ref": "#/definitions/TimeToSeeDataSessionsQuery"
+                },
+                {
+                    "$ref": "#/definitions/EventsQuery"
+                },
+                {
+                    "$ref": "#/definitions/PersonsQuery"
+                },
+                {
+                    "$ref": "#/definitions/InsightPersonsQuery"
+                },
+                {
+                    "$ref": "#/definitions/SessionsTimelineQuery"
+                },
+                {
+                    "$ref": "#/definitions/HogQLQuery"
+                },
+                {
+                    "$ref": "#/definitions/HogQLMetadata"
+                },
+                {
+                    "$ref": "#/definitions/WebOverviewQuery"
+                },
+                {
+                    "$ref": "#/definitions/WebStatsTableQuery"
+                },
+                {
+                    "$ref": "#/definitions/WebTopClicksQuery"
                 },
                 {
                     "$ref": "#/definitions/DataVisualizationNode"
@@ -2502,12 +2549,11 @@
                     "$ref": "#/definitions/LifecycleQuery"
                 },
                 {
-                    "$ref": "#/definitions/TimeToSeeDataSessionsQuery"
-                },
-                {
                     "$ref": "#/definitions/DatabaseSchemaQuery"
                 }
-            ]
+            ],
+            "required": ["kind"],
+            "type": "object"
         },
         "QueryStatus": {
             "additionalProperties": false,
