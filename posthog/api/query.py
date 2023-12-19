@@ -36,7 +36,7 @@ from posthog.rate_limit import (
     AISustainedRateThrottle,
     TeamRateThrottle,
 )
-from posthog.schema import QueryRequest
+from posthog.schema import QueryRequest, QuerySchema
 from posthog.utils import refresh_requested_by_client
 
 

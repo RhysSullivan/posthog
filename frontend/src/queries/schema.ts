@@ -578,6 +578,35 @@ export type LifecycleFilter = Omit<LifecycleFilterType, keyof FilterType | 'show
     toggledLifecycles?: LifecycleToggle[]
 } // using everything except what it inherits from FilterType
 
+export interface QueryRequest {
+    /** Client provided query ID. Can be used to retrieve the status or cancel the query. */
+    client_query_id?: string
+    refresh?: boolean
+    /**
+     * (Experimental)
+     * Whether to run the query asynchronously. Defaults to False.
+     * If True, the `id` of the query can be used to check the status and to cancel it.
+     * @example true
+     */
+    async?: boolean
+    /**
+     * Submit a JSON string representing a query for PostHog data analysis,
+     * for example a HogQL query.
+     *
+     * Example payload:
+     *
+     * ```
+     *
+     * {"query": {"kind": "HogQLQuery", "query": "select * from events limit 100"}}
+     *
+     * ```
+     *
+     * For more details on HogQL queries,
+     * see the [PostHog HogQL documentation](/docs/hogql#api-access).
+     */
+    query?: QuerySchema
+}
+
 export interface QueryResponse {
     results: unknown[]
     timings?: QueryTiming[]
