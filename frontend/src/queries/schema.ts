@@ -478,7 +478,10 @@ export interface InsightsQueryBase extends Node {
     filterTestAccounts?: boolean
     /** Property filters for all series */
     properties?: AnyPropertyFilter[] | PropertyGroupFilter
-    /** Groups aggregation */
+    /**
+     * Groups aggregation
+     * @asType integer
+     **/
     aggregation_group_type_index?: number
     /** Sampling rate */
     samplingFactor?: number | null
@@ -674,6 +677,12 @@ export interface PersonsQueryResponse {
     hogql: string
     timings?: QueryTiming[]
     hasMore?: boolean
+    /** @asType integer */
+    limit: number
+    /** @asType integer */
+    offset: number
+    /** @asType integer */
+    missing_actors_count?: number
 }
 
 export interface PersonsQuery extends DataNode {
@@ -684,7 +693,9 @@ export interface PersonsQuery extends DataNode {
     properties?: AnyPropertyFilter[]
     fixedProperties?: AnyPropertyFilter[]
     orderBy?: string[]
+    /** @asType integer */
     limit?: number
+    /** @asType integer */
     offset?: number
     response?: PersonsQueryResponse
 }
@@ -813,6 +824,11 @@ export interface InsightPersonsQuery {
     source: InsightQuerySource
     day?: string
     status?: string
+    /**
+     * An interval selected out of available intervals in source query
+     * @asType integer
+     */
+    interval?: number
     // TODO: add breakdowns
     // TODO: add fields for other insights (funnels dropdown, compare_previous choice, etc)
     response?: PersonsQueryResponse

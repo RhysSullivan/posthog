@@ -1048,6 +1048,9 @@ class PersonsQueryResponse(BaseModel):
     columns: List
     hasMore: Optional[bool] = None
     hogql: str
+    limit: int
+    missing_actors_count: Optional[int] = None
+    offset: int
     results: List[List]
     timings: Optional[List[QueryTiming]] = None
     types: List[str]
@@ -1502,7 +1505,7 @@ class RetentionQuery(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    aggregation_group_type_index: Optional[float] = Field(default=None, description="Groups aggregation")
+    aggregation_group_type_index: Optional[int] = Field(default=None, description="Groups aggregation")
     dateRange: Optional[DateRange] = Field(default=None, description="Date range for the query")
     filterTestAccounts: Optional[bool] = Field(
         default=None, description="Exclude internal and test users by applying the respective filters"
@@ -1542,7 +1545,7 @@ class TrendsQuery(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    aggregation_group_type_index: Optional[float] = Field(default=None, description="Groups aggregation")
+    aggregation_group_type_index: Optional[int] = Field(default=None, description="Groups aggregation")
     breakdown: Optional[BreakdownFilter] = Field(default=None, description="Breakdown of the events and actions")
     dateRange: Optional[DateRange] = Field(default=None, description="Date range for the query")
     filterTestAccounts: Optional[bool] = Field(
@@ -1596,7 +1599,7 @@ class FunnelsQuery(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    aggregation_group_type_index: Optional[float] = Field(default=None, description="Groups aggregation")
+    aggregation_group_type_index: Optional[int] = Field(default=None, description="Groups aggregation")
     breakdown: Optional[BreakdownFilter] = Field(default=None, description="Breakdown of the events and actions")
     dateRange: Optional[DateRange] = Field(default=None, description="Date range for the query")
     filterTestAccounts: Optional[bool] = Field(
@@ -1624,7 +1627,7 @@ class InsightsQueryBase(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    aggregation_group_type_index: Optional[float] = Field(default=None, description="Groups aggregation")
+    aggregation_group_type_index: Optional[int] = Field(default=None, description="Groups aggregation")
     dateRange: Optional[DateRange] = Field(default=None, description="Date range for the query")
     filterTestAccounts: Optional[bool] = Field(
         default=None, description="Exclude internal and test users by applying the respective filters"
@@ -1670,7 +1673,7 @@ class PathsQuery(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    aggregation_group_type_index: Optional[float] = Field(default=None, description="Groups aggregation")
+    aggregation_group_type_index: Optional[int] = Field(default=None, description="Groups aggregation")
     dateRange: Optional[DateRange] = Field(default=None, description="Date range for the query")
     filterTestAccounts: Optional[bool] = Field(
         default=None, description="Exclude internal and test users by applying the respective filters"
@@ -1722,6 +1725,9 @@ class InsightPersonsQuery(BaseModel):
         extra="forbid",
     )
     day: Optional[str] = None
+    interval: Optional[int] = Field(
+        default=None, description="An interval selected out of available intervals in source query"
+    )
     kind: Literal["InsightPersonsQuery"] = "InsightPersonsQuery"
     response: Optional[PersonsQueryResponse] = None
     source: InsightQuerySource
@@ -1734,8 +1740,8 @@ class PersonsQuery(BaseModel):
     )
     fixedProperties: Optional[List[AnyPropertyFilter]] = None
     kind: Literal["PersonsQuery"] = "PersonsQuery"
-    limit: Optional[float] = None
-    offset: Optional[float] = None
+    limit: Optional[int] = None
+    offset: Optional[int] = None
     orderBy: Optional[List[str]] = None
     properties: Optional[List[AnyPropertyFilter]] = None
     response: Optional[PersonsQueryResponse] = Field(default=None, description="Cached query response")
