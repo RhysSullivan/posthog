@@ -29,7 +29,6 @@ export interface LemonTabsProps<T extends string | number> {
     onChange?: (key: T) => void
     /** List of tabs. Falsy entries are ignored - they're there to make conditional tabs convenient. */
     tabs: (LemonTab<T> | null | false)[]
-    inline?: boolean
     borderless?: boolean
     'data-attr'?: string
 }
@@ -55,7 +54,6 @@ export function LemonTabs<T extends string | number>({
     activeKey,
     onChange,
     tabs,
-    inline = false,
     borderless = false,
     'data-attr': dataAttr,
 }: LemonTabsProps<T>): JSX.Element {
@@ -73,7 +71,6 @@ export function LemonTabs<T extends string | number>({
             className={clsx(
                 'LemonTabs',
                 transitioning && 'LemonTabs--transitioning',
-                inline && 'LemonTabs--inline',
                 borderless && 'LemonTabs--borderless'
             )}
             // eslint-disable-next-line react/forbid-dom-props

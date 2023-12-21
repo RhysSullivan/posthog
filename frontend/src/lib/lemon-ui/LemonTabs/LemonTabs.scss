@@ -13,12 +13,6 @@
         margin-top: -0.75rem;
     }
 
-    &.LemonTabs--inline {
-        --lemon-tabs-margin-bottom: 0;
-        --lemon-tabs-margin-right: 1rem;
-        --lemon-tabs-content-padding: 0.25rem 0rem;
-    }
-
     &.LemonTabs--borderless {
         .LemonTabs__bar::before {
             content: none;
