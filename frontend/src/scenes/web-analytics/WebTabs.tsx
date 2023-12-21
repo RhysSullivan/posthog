@@ -32,7 +32,7 @@ export const WebTabs = ({
                     <LemonSegmentedButton
                         size="small"
                         options={tabs.map(({ id, linkText }) => ({ label: linkText, value: id }))}
-                        onChange={setActiveTabId}
+                        onChange={(value) => setActiveTabId(value)}
                         value={activeTabId}
                     />
                 )}
