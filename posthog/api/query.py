@@ -36,7 +36,7 @@ from posthog.rate_limit import (
     AISustainedRateThrottle,
     TeamRateThrottle,
 )
-from posthog.schema import QueryRequest
+from posthog.schema import QueryRequest, QueryCombinedResponse
 
 
 class QueryThrottle(TeamRateThrottle):
@@ -64,7 +64,7 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
     @extend_schema(
         request=QueryRequest,
         responses={
-            200: OpenApiResponse(description="Query results"),
+            200: QueryCombinedResponse,
         },
     )
     def create(self, request, *args, **kwargs) -> Response:

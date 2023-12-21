@@ -2436,6 +2436,458 @@
             ],
             "type": "string"
         },
+        "QueryCombinedResponse": {
+            "additionalProperties": false,
+            "properties": {
+                "clickhouse": {
+                    "anyOf": [
+                        {},
+                        {
+                            "description": "Executed ClickHouse query",
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "columns": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "description": "Returned columns",
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "error": {
+                    "anyOf": [
+                        {},
+                        {
+                            "description": "Query error. Returned only if 'explain' is true. Throws an error otherwise.",
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "errors": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {
+                                "$ref": "#/definitions/HogQLNotice"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "explain": {
+                    "anyOf": [
+                        {},
+                        {
+                            "description": "Query explanation output",
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "hasMore": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "hogql": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "description": "Generated HogQL query",
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "inputExpr": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "inputSelect": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "isValid": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "isValidView": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "is_cached": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "last_refresh": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "limit": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "missing_actors_count": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "modifiers": {
+                    "anyOf": [
+                        {},
+                        {
+                            "$ref": "#/definitions/HogQLQueryModifiers",
+                            "description": "Modifiers used when performing the query"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "next": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {},
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "next_allowed_client_refresh": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "notices": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {
+                                "$ref": "#/definitions/HogQLNotice"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "offset": {
+                    "anyOf": [
+                        {},
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "query": {
+                    "anyOf": [
+                        {},
+                        {
+                            "description": "Input query string",
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "results": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/definitions/EventType"
+                            },
+                            "type": "array"
+                        },
+                        {},
+                        {
+                            "items": {
+                                "type": "object"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {},
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/TimelineEntry"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "description": "Query results",
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/WebOverviewItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/RetentionResult"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "timings": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {
+                                "$ref": "#/definitions/QueryTiming"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "description": "Measured timings for different parts of the query generation process",
+                            "items": {
+                                "$ref": "#/definitions/QueryTiming"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "types": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "description": "Types of returned columns",
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {},
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                },
+                "warnings": {
+                    "anyOf": [
+                        {},
+                        {
+                            "items": {
+                                "$ref": "#/definitions/HogQLNotice"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/DatabaseSchemaQueryResponseField"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "QueryRequest": {
             "additionalProperties": false,
             "properties": {

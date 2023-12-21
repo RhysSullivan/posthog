@@ -1524,6 +1524,49 @@ class PropertyGroupFilterValue(BaseModel):
     ]
 
 
+class QueryCombinedResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    clickhouse: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    columns: Optional[Union[Any, List, List[DatabaseSchemaQueryResponseField]]] = None
+    error: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    errors: Optional[Union[Any, List[HogQLNotice], List[DatabaseSchemaQueryResponseField]]] = None
+    explain: Optional[Union[Any, List[str], List[DatabaseSchemaQueryResponseField]]] = None
+    hasMore: Optional[Union[Any, bool, List[DatabaseSchemaQueryResponseField]]] = None
+    hogql: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    inputExpr: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    inputSelect: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    isValid: Optional[Union[Any, bool, List[DatabaseSchemaQueryResponseField]]] = None
+    isValidView: Optional[Union[Any, bool, List[DatabaseSchemaQueryResponseField]]] = None
+    is_cached: Optional[Union[Any, bool, List[DatabaseSchemaQueryResponseField]]] = None
+    last_refresh: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    limit: Optional[Union[Any, int, List[DatabaseSchemaQueryResponseField]]] = None
+    missing_actors_count: Optional[Union[Any, int, List[DatabaseSchemaQueryResponseField]]] = None
+    modifiers: Optional[Union[Any, HogQLQueryModifiers, List[DatabaseSchemaQueryResponseField]]] = None
+    next: Optional[Union[str, Any, List[DatabaseSchemaQueryResponseField]]] = None
+    next_allowed_client_refresh: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    notices: Optional[Union[Any, List[HogQLNotice], List[DatabaseSchemaQueryResponseField]]] = None
+    offset: Optional[Union[Any, int, List[DatabaseSchemaQueryResponseField]]] = None
+    query: Optional[Union[Any, str, List[DatabaseSchemaQueryResponseField]]] = None
+    results: Optional[
+        Union[
+            List[EventType],
+            Any,
+            List[Dict[str, Any]],
+            List[List],
+            List[TimelineEntry],
+            List,
+            List[WebOverviewItem],
+            List[RetentionResult],
+            List[DatabaseSchemaQueryResponseField],
+        ]
+    ] = None
+    timings: Optional[Union[Any, List[QueryTiming], List[DatabaseSchemaQueryResponseField]]] = None
+    types: Optional[Union[Any, List[str], List, List[DatabaseSchemaQueryResponseField]]] = None
+    warnings: Optional[Union[Any, List[HogQLNotice], List[DatabaseSchemaQueryResponseField]]] = None
+
+
 class RetentionQueryResponse(BaseModel):
     model_config = ConfigDict(
         extra="forbid",

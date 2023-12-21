@@ -130,8 +130,16 @@ export type QuerySchema =
     // Misc
     | DatabaseSchemaQuery
 
-// Keep this, because QuerySchema will be collapsed as it is used in other models
+// Keep this, because QuerySchema itself will be collapsed as it is used in other models
 export type QuerySchemaRoot = QuerySchema
+
+// Dynamically make a union type out of all the "response" fields in QuerySchema
+type ResponseType<T> = T extends { response: infer R } ? R : never
+type AllResponses = ResponseType<QuerySchema>
+type Unionize<T> = Partial<{
+    [P in keyof T]: T[P]
+}>
+export type QueryCombinedResponse = Unionize<AllResponses>
 
 /** Node base class, everything else inherits from here */
 export interface Node {
