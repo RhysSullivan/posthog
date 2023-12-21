@@ -130,6 +130,9 @@ export type QuerySchema =
     // Misc
     | DatabaseSchemaQuery
 
+// Keep this, because QuerySchema will be collapsed as it is used in other models
+export type QuerySchemaRoot = QuerySchema
+
 /** Node base class, everything else inherits from here */
 export interface Node {
     kind: NodeKind
@@ -621,7 +624,7 @@ export interface QueryRequest {
      * For more details on HogQL queries,
      * see the [PostHog HogQL documentation](/docs/hogql#api-access).
      */
-    query?: QuerySchema
+    query: QuerySchema
 }
 
 export interface QueryResponse {

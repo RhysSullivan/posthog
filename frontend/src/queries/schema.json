@@ -2456,6 +2456,7 @@
                     "type": "boolean"
                 }
             },
+            "required": ["query"],
             "type": "object"
         },
         "QueryResponse": {
@@ -2567,6 +2568,9 @@
             ],
             "required": ["kind"],
             "type": "object"
+        },
+        "QuerySchemaRoot": {
+            "$ref": "#/definitions/QuerySchema"
         },
         "QueryStatus": {
             "additionalProperties": false,

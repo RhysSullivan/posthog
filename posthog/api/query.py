@@ -1,22 +1,22 @@
 import json
 import re
 import uuid
-from typing import Dict
 
+from pydantic import BaseModel
 from django.http import JsonResponse
 from drf_spectacular.utils import OpenApiResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ParseError, ValidationError, NotAuthenticated
-from rest_framework.parsers import JSONParser
+from rest_framework.exceptions import ValidationError, NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from sentry_sdk import capture_exception
 
 from posthog.api.documentation import extend_schema
+from posthog.api.parsers import PydanticJSONParser
 from posthog.api.routing import StructuredViewSetMixin
-from posthog.api.services.query import process_query
+from posthog.api.services.query import process_query_model
 from posthog.clickhouse.client.execute_async import (
     cancel_query,
     enqueue_process_query_task,
@@ -36,35 +36,12 @@ from posthog.rate_limit import (
     AISustainedRateThrottle,
     TeamRateThrottle,
 )
-from posthog.schema import QueryRequest, QuerySchema
-from posthog.utils import refresh_requested_by_client
+from posthog.schema import QueryRequest
 
 
 class QueryThrottle(TeamRateThrottle):
     scope = "query"
     rate = "120/hour"
-
-
-class QuerySchemaParser(JSONParser):
-    """
-    A query schema parser that ensures a valid query is present in the request
-    """
-
-    @staticmethod
-    def validate_query(data) -> Dict:
-        try:
-            QuerySchema.model_validate(data)
-            # currently we have to return data not the parsed Model
-            # because while pydantic knows to discriminate on 'kind',
-            # we cannot get mypy to understand that
-            return data
-        except Exception as error:
-            raise ParseError(detail=str(error))
-
-    def parse(self, stream, media_type=None, parser_context=None):
-        data = super(QuerySchemaParser, self).parse(stream, media_type, parser_context)
-        QuerySchemaParser.validate_query(data.get("query"))
-        return data
 
 
 class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
@@ -73,8 +50,10 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
         ProjectMembershipNecessaryPermissions,
         TeamMemberAccessPermission,
     ]
-
-    parser_classes = (QuerySchemaParser,)
+    parser_classes = (PydanticJSONParser,)
+    pydantic_models = {
+        "create": QueryRequest,
+    }
 
     def get_throttles(self):
         if self.action == "draft_sql":
@@ -89,28 +68,24 @@ class QueryViewSet(StructuredViewSetMixin, viewsets.ViewSet):
         },
     )
     def create(self, request, *args, **kwargs) -> Response:
-        request_json = request.data
-        query_json = request_json.get("query")
-        query_async = request_json.get("async", False)
-        refresh_requested = refresh_requested_by_client(request)
-        client_query_id = request_json.get("client_query_id") or uuid.uuid4().hex
-
-        if query_json is None:
-            raise ValidationError("Please provide a query in the request body.")
+        data: QueryRequest = request.data
+        client_query_id = data.client_query_id or uuid.uuid4().hex
 
         self._tag_client_query_id(client_query_id)
 
-        if query_async:
+        if data.async_:
             query_status = enqueue_process_query_task(
                 team_id=self.team.pk,
-                query_json=query_json,
+                query_json=data.query.model_dump(),
                 query_id=client_query_id,
-                refresh_requested=refresh_requested,
+                refresh_requested=(data.refresh),
             )
             return Response(query_status.model_dump())
 
         try:
-            result = process_query(self.team, query_json, refresh_requested=refresh_requested)
+            result = process_query_model(self.team, data.query, refresh_requested=data.refresh)
+            if isinstance(result, BaseModel):
+                return Response(result.model_dump())
             return Response(result)
         except (HogQLException, ExposedCHQueryError) as e:
             raise ValidationError(str(e), getattr(e, "code_name", None))
