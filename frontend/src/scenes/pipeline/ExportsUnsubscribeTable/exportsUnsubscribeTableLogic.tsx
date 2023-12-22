@@ -1,5 +1,4 @@
-import { lemonToast } from '@posthog/lemon-ui'
-import { actions, afterMount, connect, kea, listeners, path, reducers, selectors } from 'kea'
+import { actions, afterMount, connect, kea, path, selectors } from 'kea'
 import { loaders } from 'kea-loaders'
 import api from 'lib/api'
 import { IconDatabase } from 'lib/lemon-ui/icons'
@@ -10,6 +9,7 @@ import { BatchExportConfiguration, PluginConfigTypeNew } from '~/types'
 
 import { pipelineTransformationsLogic } from '../transformationsLogic'
 import { RenderApp } from '../utils'
+import type { exportsUnsubscribeTableLogicType } from './exportsUnsubscribeTableLogicType'
 
 export interface ItemToDisable {
     plugin_config_id: number | undefined // exactly one of plugin_config_id or batch_export_id is set
@@ -21,19 +21,15 @@ export interface ItemToDisable {
     disabled: boolean
 }
 
-export const exportsUnsubscribeTableLogic = kea([
+export const exportsUnsubscribeTableLogic = kea<exportsUnsubscribeTableLogicType>([
     path(['scenes', 'pipeline', 'ExportsUnsubscribeTableLogic']),
     connect({
         values: [pluginsLogic, ['plugins'], pipelineTransformationsLogic, ['canConfigurePlugins'], userLogic, ['user']],
     }),
 
     actions({
-        openModal: true,
-        closeModal: true,
         disablePlugin: (id: number) => ({ id }),
         pauseBatchExport: (id: string) => ({ id }),
-        startUnsubscribe: true,
-        completeUnsubscribe: true,
     }),
     loaders(({ values }) => ({
         pluginConfigsToDisable: [
@@ -84,9 +80,9 @@ export const exportsUnsubscribeTableLogic = kea([
                 return loading
                     ? 'Loading...'
                     : Object.values(pluginConfigsToDisable).some((pluginConfig) => pluginConfig.enabled)
-                    ? 'All apps above need to be disabled explicitly first'
+                    ? 'All apps above must be disabled first'
                     : Object.values(batchExportConfigs).some((batchExportConfig) => !batchExportConfig.paused)
-                    ? 'All batch exports need to be deleted first'
+                    ? 'All batch exports must be disabled first'
                     : null
             },
         ],
@@ -123,36 +119,6 @@ export const exportsUnsubscribeTableLogic = kea([
             },
         ],
     }),
-    reducers({
-        modalOpen: [
-            false,
-            {
-                openModal: () => true,
-                closeModal: () => false,
-            },
-        ],
-    }),
-    listeners(({ actions, values }) => ({
-        // Usage guide:
-        // const { startUnsubscribe } = useActions(ExportsUnsubscribeTableLogic)
-        // const { loading } = useValues(ExportsUnsubscribeTableLogic)
-        // return (<>
-        //   <ExportsUnsubscribeTable />
-        //   <LemonButton loading={loading} onClick={startUnsubscribe}>Unsubscribe from data pipelines</LemonButton>
-        // </>)
-        startUnsubscribe() {
-            if (values.loading || values.unsubscribeDisabledReason) {
-                actions.openModal()
-            } else {
-                actions.completeUnsubscribe()
-            }
-        },
-        completeUnsubscribe() {
-            actions.closeModal()
-            lemonToast.success('Successfully unsubscribed from all data pipelines')
-            // TODO: whatever needs to happen for the actual unsubscription
-        },
-    })),
     afterMount(({ actions }) => {
         actions.loadPluginConfigs()
         actions.loadBatchExportConfigs()
