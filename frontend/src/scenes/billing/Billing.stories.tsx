@@ -19,7 +19,7 @@ const meta: Meta = {
         layout: 'fullscreen',
         viewMode: 'story',
         mockDate: '2023-05-25',
-        testOptions: { include3000: true, waitForSelector: '.LemonTable__content' },
+        testOptions: { include3000: true },
     },
     decorators: [
         mswDecorator({
@@ -109,4 +109,7 @@ export const BillingUnsubscribeModal_DataPipelines = (): JSX.Element => {
     ]
 
     return <UnsubscribeSurveyModal product={product} />
+}
+BillingUnsubscribeModal_DataPipelines.parameters = {
+    testOptions: { include3000: true, waitForSelector: '.LemonTable__content' },
 }
