@@ -1,11 +1,10 @@
-import { useActions, useValues } from 'kea'
+import { useValues } from 'kea'
 import { LemonButton, LemonButtonProps, SideAction } from 'lib/lemon-ui/LemonButton'
 import { LemonTag } from 'lib/lemon-ui/LemonTag/LemonTag'
 import { sceneLogic } from 'scenes/sceneLogic'
 import { sceneConfigurations } from 'scenes/scenes'
 import { Scene } from 'scenes/sceneTypes'
 
-import { navigationLogic } from '~/layout/navigation/navigationLogic'
 import { SidebarChangeNoticeTooltip } from '~/layout/navigation/SideBar/SidebarChangeNotice'
 import { dashboardsModel } from '~/models/dashboardsModel'
 
@@ -22,7 +21,6 @@ export interface PageButtonProps extends Pick<LemonButtonProps, 'icon' | 'onClic
 export function PageButton({ title, sideAction, identifier, highlight, ...buttonProps }: PageButtonProps): JSX.Element {
     const { activeScene } = useValues(sceneLogic)
     const { sceneBreadcrumbKeys } = useValues(breadcrumbsLogic)
-    const { hideSideBarMobile } = useActions(navigationLogic)
     const { lastDashboardId } = useValues(dashboardsModel)
 
     const isActiveSide: boolean = !!sideAction?.identifier && activeScene === sideAction.identifier
@@ -43,7 +41,7 @@ export function PageButton({ title, sideAction, identifier, highlight, ...button
                         fullWidth
                         status={buttonStatus}
                         active={isActive}
-                        onClick={hideSideBarMobile}
+                        onClick={() => {}}
                         sideAction={{
                             ...sideAction,
                             'data-attr': sideAction.identifier
@@ -61,7 +59,7 @@ export function PageButton({ title, sideAction, identifier, highlight, ...button
                         status={buttonStatus}
                         active={isActive}
                         data-attr={`menu-item-${identifier.toString().toLowerCase()}`}
-                        onClick={hideSideBarMobile}
+                        onClick={() => {}}
                         sideIcon={null}
                         {...buttonProps}
                     >
